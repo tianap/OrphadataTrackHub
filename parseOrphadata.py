@@ -61,7 +61,7 @@ def getEnsGeneInfo():
     # Capture all ensembl transcript information into a dictionary ensemblInfo
     ensemblInfo = dict()
 
-    sys.stdout.write('Storing hg19 Ensembl transcript information...')
+    #sys.stdout.write('Storing hg19 Ensembl transcript information...')
     for line in hg19ensFile:
         geneInfo = [x.replace('"', "").replace(';', "") for x in line.strip().split()]  # reformat, convert to list
         geneID = geneInfo[9]  # grab geneID
@@ -71,7 +71,7 @@ def getEnsGeneInfo():
                 ensemblInfo[geneID] = gene  # store the Gene object in
 
     hg19ensFile.close()  # close the file
-    sys.stdout.write('Finished.')
+    #sys.stdout.write('Finished.')
     return ensemblInfo
 
 
@@ -109,7 +109,7 @@ def parseRareDiseases(disorderDict, ensemblDict):
 
     :return: updated dictionary containing all disorders and associated genes
     """
-    sys.stdout.write('Finding disorders and associated genes/gene information...')
+    #sys.stdout.write('Finding disorders and associated genes/gene information...')
     # Open .xml file using ElementTree
     tree = ET.parse('en_product6.xml')
     root = tree.getroot()
@@ -231,7 +231,7 @@ def parseRareDiseases(disorderDict, ensemblDict):
         disorderDict[diseaseName]["expertLink"] = link
         disorderDict[diseaseName]["type"] = disorderType
 
-    sys.stdout.write('Finished finding disorders and genes/gene information.')
+    #sys.stdout.write('Finished finding disorders and genes/gene information.')
     return disorderDict
 
 
@@ -257,7 +257,7 @@ def parsePhenotypesRareDiseases(disorderDict):
     :return: updated dictionary containing phenotypes associated with disorders
     """
 
-    sys.stdout.write('Finding phenotypes associated with Rare Diseases...')
+    #sys.stdout.write('Finding phenotypes associated with Rare Diseases...')
 
     # Open .xml files with ElementTree
     tree = ET.parse('en_product4.xml')
@@ -322,7 +322,7 @@ def parsePhenotypesRareDiseases(disorderDict):
             elif 'Very rare ' in hpoFrequency:
                 disorderDict[diseaseName]["rare phenotypes"].append(x)
 
-    sys.stdout.write('Finished finding phenotypes.')
+    #sys.stdout.write('Finished finding phenotypes.')
     return disorderDict
 
 
@@ -348,7 +348,7 @@ def parseRareDiseaseEpi(disorderDict):
 
     """
 
-    sys.stdout.write('Finding epidemiological data for disorders...')
+    #sys.stdout.write('Finding epidemiological data for disorders...')
 
     # Open .xml files with ElementTree
     tree = ET.parse('en_product9_prev.xml')
@@ -410,7 +410,7 @@ def parseRareDiseaseEpi(disorderDict):
         # Add the prevalence info to the disorder
         disorderDict[name]["prevalence(s)"] = prevalences
 
-    sys.stdout.write('Finished finding epidemiological data.')
+    #sys.stdout.write('Finished finding epidemiological data.')
 
 
 def naturalHistory(disorderDict):
@@ -432,7 +432,7 @@ def naturalHistory(disorderDict):
     Products file.
     """
 
-    sys.stdout.write('Finding ages of onset, death, and inheritance types...')
+    #sys.stdout.write('Finding ages of onset, death, and inheritance types...')
     # Open .xml file using ElementTree
     tree = ET.parse('en_product9_ages.xml')
     root = tree.getroot()
@@ -473,7 +473,7 @@ def naturalHistory(disorderDict):
             else:
                 inheritanceValues[inheritance] += 1
 
-    sys.stdout.write('Finished finding onset/death/inheritance information.')
+    #sys.stdout.write('Finished finding onset/death/inheritance information.')
     return disorderDict
 
 
@@ -672,7 +672,7 @@ def createBed(disorderDict):
 
 def main():
     """
-    Main docstring
+    Main docstring blah blah
     """
     startTime = time.time()
     ensemblDict = getEnsGeneInfo()
