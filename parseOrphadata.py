@@ -57,7 +57,7 @@ def getEnsGeneInfo():
 
     # Downloaded from here: http://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/genes/
     # NOTE: we need to download ensembl info
-    hg19ensFile = open("hg19.ensGene.gtf", "r", encoding='utf-8')
+    hg19ensFile = open("../hg19.ensGene.gtf", "r", encoding='utf-8')
 
     # Capture all ensembl transcript information into a dictionary ensemblInfo
     ensemblInfo = dict()
@@ -112,7 +112,7 @@ def parseRareDiseases(disorderDict, ensemblDict):
     """
     #sys.stdout.write('Finding disorders and associated genes/gene information...')
     # Open .xml file using ElementTree
-    tree = ET.parse('en_product6.xml')
+    tree = ET.parse('./en_product6.xml')
     root = tree.getroot()
     assnValues = dict()
     assnStatusVals = dict()
@@ -261,7 +261,7 @@ def parsePhenotypesRareDiseases(disorderDict):
     #sys.stdout.write('Finding phenotypes associated with Rare Diseases...')
 
     # Open .xml files with ElementTree
-    tree = ET.parse('en_product4.xml')
+    tree = ET.parse('./en_product4.xml')
     root = tree.getroot()
 
     # Iterate through all disorder and associated HPO phenotypes
@@ -352,7 +352,7 @@ def parseRareDiseaseEpi(disorderDict):
     #sys.stdout.write('Finding epidemiological data for disorders...')
 
     # Open .xml files with ElementTree
-    tree = ET.parse('en_product9_prev.xml')
+    tree = ET.parse('./en_product9_prev.xml')
     root = tree.getroot()
 
     # Iterate through disorders
@@ -435,7 +435,7 @@ def naturalHistory(disorderDict):
 
     #sys.stdout.write('Finding ages of onset, death, and inheritance types...')
     # Open .xml file using ElementTree
-    tree = ET.parse('en_product9_ages.xml')
+    tree = ET.parse('./en_product9_ages.xml')
     root = tree.getroot()
 
     inheritanceValues = dict()
@@ -478,7 +478,7 @@ def naturalHistory(disorderDict):
     return disorderDict
 
 
-def createBed(disorderDict):
+def createBed(disorderDict, timestamp):
     """
     Creates the final BED file using all disorders/genes and other information.
 
@@ -529,7 +529,7 @@ def createBed(disorderDict):
     # Create new BED file
     # NOTE: encoding for utf-8 is required since several disorders contain special characters that are not included in
     # ascii incoding.
-    f = open('orphadataTest.bed', "w", encoding='utf-8')
+    f = open('./'+timestamp+'/orphadata.bed', "w", encoding='utf-8')
 
     # Iterate through disorders
     for disease in disorderDict.keys():
@@ -683,6 +683,8 @@ def main():
     timestamp = args.timestamp
     
     startTime = time.time()
+
+    # Create Ensembl dictionary
     ensemblDict = getEnsGeneInfo()
 
     # Create dictonary to store disorders
@@ -701,7 +703,8 @@ def main():
     naturalHistory(disorderDict)
 
     # 5. Create BED file
-    createBed(disorderDict)
+    createBed(disorderDict, timestamp)
+
     print("Time elapsed: ", time.time() - startTime)
 
 
