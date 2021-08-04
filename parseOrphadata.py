@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import xml.etree.ElementTree as ET
+import argparse
 import re
 import time
 import sys
@@ -672,11 +673,19 @@ def createBed(disorderDict):
 
 def main():
     """
-    Main docstring blah blah
+    Calls all methods required for downloading Orphadata files and creating BED file.
     """
+
+    # Grab timestamp
+    parser = argparse.ArgumentParser(description='Downloads most recent Orphadata files and generates a BED file for Orphadata track hub.')
+    parser.add_argument("-t", "--timestamp", help="The timestamp at which script is called.", required=True)
+    args = parser.parse_args()
+    timestamp = args.timestamp
+    
     startTime = time.time()
     ensemblDict = getEnsGeneInfo()
 
+    # Create dictonary to store disorders
     disorderDict = dict()
 
     # 1. Parse Rare Diseases
@@ -691,6 +700,7 @@ def main():
     # 4. Natural History (ages)
     naturalHistory(disorderDict)
 
+    # 5. Create BED file
     createBed(disorderDict)
     print("Time elapsed: ", time.time() - startTime)
 
