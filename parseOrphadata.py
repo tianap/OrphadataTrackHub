@@ -528,8 +528,8 @@ def createBed(disorderDict, timestamp):
 
     # Create new BED file
     # NOTE: encoding for utf-8 is required since several disorders contain special characters that are not included in
-    # ascii incoding.
-    f = open('./'+timestamp+'/orphadata.bed', "w", encoding='utf-8')
+    # ascii encoding.
+    f = open('orphadata.bed', "w", encoding='utf-8')
 
     # Iterate through disorders
     for disease in disorderDict.keys():
