@@ -1,0 +1,84 @@
+This track hub includes aggregated publicly available data from Orphadata - an online resource for disorders and associated genes (as well as phenotypes and epidemiological data) from Orphanet. 
+
+The bigBed file is created using the shell script createBigBed.sh which can be found in /cluster/home/tmpereir/public_html/trackHubs/orphadata (change to permanent location). The script downloads all relevant .xml files from Orphadata, calls a Python python script, parseOrphadata.py, that scrapes the files and captures all information necessary for the track (more information on the Orphadata files can be found in the docstrings for parseOrphadata.py).
+
+FILE DOWNLOAD
+
+The following files were downloaded from Orphadata (http://www.orphadata.org/cgi-bin/index.php):
+
+File: GENES ASSOCIATED WITH RARE DISEASES
+Download: http://www.orphadata.org/data/xml/en_product6.xml
+
+File: PHENOTYPES ASSOCIATED WITH RARE DISORDERS
+Download: http://www.orphadata.org/data/xml/en_product4.xml
+
+File: RARE DISEASES EPIDEMIOLOGY
+Download: http://www.orphadata.org/data/xml/en_product9_prev.xml 
+
+File: RARE DISEASES NATURAL HISTORY
+Download: http://www.orphadata.org/data/xml/en_product9_ages.xml
+
+Gene information was used through the file http://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.ensGene.gtf.gz  and is read by parseOrphadata.py.
+
+All information from these files is included in one track. 
+
+PARSING THROUGH DOWNLOADED FILES
+
+All of the above files were parsed using a Python script, parseOrphadata.py that is included here: /cluster/home/tmpereir/public_html/trackHubs/orphadata. More information regarding how the script works is included in the Python script itself.
+
+CREATING BED
+
+The BED file contains a total of 25 fields:
+
+        1. chrom : name of chromosome in which gene exists (required)
+        2. chromStart : start position of gene (required)
+        3. chromEnd : end position of gene (required)
+        4. name : name of the BED line; the OrphaCode for each disorder is used here
+        5. score : score between 0 and 1000; not relevant to this track and is by default 0
+        6. strand : defines the strand, either "+", "-", or "." for no strand
+        7. thickStart : start position where gene is drawn thickly (same as field 2)
+        8. thickEnd : end position where gene is drawn thickly (same as field 3)
+        9. itemRgb : color of the item
+        10. disorderName : name of the disorder
+        11. geneSymbol : HGNC-approved gene symbol
+        12. geneName : gene name
+        13. ensemblID : identifier used within Ensembl database
+        14. geneType : the type of gene
+        15. geneLocus : gene chromosomal location
+        16. assnStatus : whether disorder-gene association is validated or not
+        17. assnType : type of gene-disease relationship
+        18. pmid : PMID reference(s)
+        19. orphaCode : unique numerical identifier internal to Orphanet
+        20. omim : OMIM reference
+        21. hgnc : HGNC reference
+        22. inheritance : type(s) of inheritance associated with the disorder
+        23. onsetList : list of ages of onset associated with the disorder
+        24. deathList : list of average ages of death associated with the disorder
+        25. prevalences : types of prevalence associated with disorder
+
+Each item in the BED file is a disorder that is associated with a gene, whose chromosomal coordinates are included in the track line. For example: 
+
+       <GeneA chr>   <GeneA start>  <GeneA end> <Disorder1 ID> ... <Disorder1 Name> ... <disorder info>
+        <GeneB chr>   <GeneB start>  <GeneB end> <Disorder1 ID> ... <Disorder1 Name> ... <disorder info>
+        <GeneC chr>   <GeneC start>  <GeneC end> <Disorder1 ID> ... <Disorder1 Name> ... <disorder info>
+
+CONVERTING BED TO BIGBED
+
+The following commands were used to convert the BED file to bigBed format (these commands can be found in createBigBed.sh).
+
+# sort the BED file
+sort -k1,1 -k2,2n "$fileName.bed" > sortedOrphadata.bed
+
+# Get hg19 chromsizes
+> fetchChromSizes hg19 > hg19.chrom.sizes
+
+# bigBed file name
+bedToBigBed -tab -as="$parentPath/orphadata.as" -type=bed9+ sortedOrphadata.bed "$parentPath/hg19.chrom.sizes" "$fileName.bb"
+
+NOTE: -tab needs to be used, otherwise errors will occur.
+
+The variables $fileName includes the timestamp at which the script is called, and $parentPath includes the parent directory for the Orphadata track.
+
+The final bigBed file is then copied over to the hg19 directory. 
+
+NOTE: the trackDb.txt file must then be updated with the new bigBed file name.
