@@ -66,10 +66,25 @@ def getEnsGeneInfo():
     for line in hg19ensFile:
         geneInfo = [x.replace('"', "").replace(';', "") for x in line.strip().split()]  # reformat, convert to list
         geneID = geneInfo[9]  # grab geneID
-        if geneID not in ensemblInfo.keys(): # check if new gene
-            if geneInfo[2] == 'transcript':  # if line includes transcript information
-                gene = Gene(geneInfo)  # create new Gene object
-                ensemblInfo[geneID] = gene  # store the Gene object in
+
+        if geneInfo[2] == 'transcript':
+            if geneID not in ensemblInfo.keys():  # check new gene
+                gene = Gene(geneInfo)  
+                ensemblInfo[geneID] = gene  # store the Gene object
+            else:  
+                # Grab the stored coordinates
+                oldStart = int(ensemblInfo[geneID].start)
+                oldEnd = int(ensemblInfo[geneID].end) 
+
+                # compare the coordinates
+                if abs(int(geneInfo[4]) - int(geneInfo[3])) > abs(oldEnd - oldStart):
+                    ensemblInfo[geneID].start = geneInfo[3]
+                    ensemblInfo[geneID].end = geneInfo[4]
+
+        # if geneID not in ensemblInfo.keys(): # check if new gene
+        #     if geneInfo[2] == 'transcript':  # if line includes transcript information
+        #         gene = Gene(geneInfo)  # create new Gene object
+        #         ensemblInfo[geneID] = gene  # store the Gene object in
 
     hg19ensFile.close()  # close the file
     #sys.stdout.write('Finished.')
@@ -348,8 +363,6 @@ def parseRareDiseaseEpi(disorderDict):
     Products file.
 
     """
-
-    #sys.stdout.write('Finding epidemiological data for disorders...')
 
     # Open .xml files with ElementTree
     tree = ET.parse('./en_product9_prev.xml')
