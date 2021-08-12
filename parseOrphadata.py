@@ -520,6 +520,10 @@ def createBed(disorderDict, timestamp):
         23. onsetList : list of ages of onset associated with the disorder
         24. deathList : list of average ages of death associated with the disorder
         25. prevalences : types of prevalence associated with disorder
+        26. verFreqPhen : very frequent phenotype(s)
+        27. freqPhen : frequent phenotype(s)
+        28. occasPhen : occasional phenotype(s)
+        29. rarePhen : rare phenotype(s)
 
 
     :param disorderDict:
@@ -634,6 +638,8 @@ def createBed(disorderDict, timestamp):
                     else:
                         row.append(', '.join(str(x) for x in disorderDict[disease]['prevalence(s)']))
 
+                    # NOTE: The following fields featuring phenotype(s) are formatted according to the extraTabelFields format (refer to bigBed documentation).
+
                     # Field 26: very frequent phenotype(s)
                     if 'very frequent phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['very frequent phenotypes']) > 0:
@@ -644,7 +650,7 @@ def createBed(disorderDict, timestamp):
                     # Field 27: frequent phenotype(s)
                     if 'frequent phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['frequent phenotypes']) > 0:
-                        row.append(', '.join('('+str(x)+')' for x in disorderDict[disease]['frequent phenotypes']))
+                        row.append('|'.join('('+str(x)+')' for x in disorderDict[disease]['frequent phenotypes']))
                     else:
                         row.append('')
 
