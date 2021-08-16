@@ -42,10 +42,10 @@ class Gene():
 
 def getEnsGeneInfo():
     """
-    Retrieves all transcript information according to Ensembl gene_id (hg19) to be stored in a dictionary, ensemblInfo.
-    For each transcript line in the file (hg19.ensGene.gtf), a Gene object is created that stores the gene ID,
-    chromosome, chromosomal positions, and strand. This object is then stored as a value in the ensemblInfo dictionary,
-    with the gene ID as the dictionary key.
+    Retrieves all transcript information a(faccording to Ensembl gene_id (hg19) to be stored in a dictionary, ensemblInfo.
+    Iterates through each transcript line for each gene and creates a Gene object using the transcript with the greatest
+    chromosomal length. The created Gene object stores the gene ID, chromosome, chromosomal positions, and strand.
+    This object is then stored as a value in the ensemblInfo dictionary, with the gene ID as the dictionary key.
 
     NOTE: the gene_id ('ENSG...') is used to identify genes because these are the IDs included in the Orphadata files.
 
@@ -80,11 +80,6 @@ def getEnsGeneInfo():
                 if abs(int(geneInfo[4]) - int(geneInfo[3])) > abs(oldEnd - oldStart):
                     ensemblInfo[geneID].start = geneInfo[3]
                     ensemblInfo[geneID].end = geneInfo[4]
-
-        # if geneID not in ensemblInfo.keys(): # check if new gene
-        #     if geneInfo[2] == 'transcript':  # if line includes transcript information
-        #         gene = Gene(geneInfo)  # create new Gene object
-        #         ensemblInfo[geneID] = gene  # store the Gene object in
 
     hg19ensFile.close()  # close the file
     #sys.stdout.write('Finished.')
