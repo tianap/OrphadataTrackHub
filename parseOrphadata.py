@@ -321,7 +321,7 @@ def parsePhenotypesRareDiseases(disorderDict):
             except AttributeError:
                 hpoDiagnostic = association.find("DiagnosticCriteria").text
 
-            #x = "Name: {}, HPOID: {}, Diagnostic Criteria: {}#".format(hpoName, hpoId, hpoDiagnostic)
+            # Tuple format to create <a> tags in details page
             x = (hpoName, hpoId)
 
             # categorize frequencies
@@ -334,7 +334,6 @@ def parsePhenotypesRareDiseases(disorderDict):
             elif 'Very rare ' in hpoFrequency:
                 disorderDict[diseaseName]["rare phenotypes"].append(x)
 
-    #sys.stdout.write('Finished finding phenotypes.')
     return disorderDict
 
 
