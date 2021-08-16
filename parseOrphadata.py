@@ -321,7 +321,8 @@ def parsePhenotypesRareDiseases(disorderDict):
             except AttributeError:
                 hpoDiagnostic = association.find("DiagnosticCriteria").text
 
-            x = "Name: {}, HPOID: {}, Diagnostic Criteria: {}".format(hpoName, hpoId, hpoDiagnostic)
+            #x = "Name: {}, HPOID: {}, Diagnostic Criteria: {}#".format(hpoName, hpoId, hpoDiagnostic)
+            x = (hpoName, hpoId)
 
             # categorize frequencies
             if hpoFrequency == 'very frequent (99-80%)':
@@ -651,28 +652,28 @@ def createBed(disorderDict, timestamp):
                     # Field 26: very frequent phenotype(s)
                     if 'very frequent phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['very frequent phenotypes']) > 0:
-                        row.append(', '.join('('+str(x)+')'for x in disorderDict[disease]['very frequent phenotypes']))
+                        row.append(', '.join('<a href="https://hpo.jax.org/app/browse/term/'+x[1]+'" target="_blank">'+x[0]+'</a>' for x in disorderDict[disease]['very frequent phenotypes']))
                     else:
                         row.append('')
 
                     # Field 27: frequent phenotype(s)
                     if 'frequent phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['frequent phenotypes']) > 0:
-                        row.append('|'.join('('+str(x)+')' for x in disorderDict[disease]['frequent phenotypes']))
+                        row.append(', '.join('<a href="https://hpo.jax.org/app/browse/term/'+x[1]+'" target="_blank">'+x[0]+'</a>' for x in disorderDict[disease]['frequent phenotypes']))
                     else:
                         row.append('')
 
                     # Field 28: occasional phenotype(s)
                     if 'occasional phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['occasional phenotypes']) > 0:
-                        row.append(', '.join('('+str(x)+')' for x in disorderDict[disease]['occasional phenotypes']))
+                        row.append(', '.join('<a href="https://hpo.jax.org/app/browse/term/'+x[1]+'" target="_blank">'+x[0]+'</a>' for x in disorderDict[disease]['occasional phenotypes']))
                     else:
                         row.append('')
 
                     # Field 29: rare phenotype(s)
                     if 'rare phenotypes' in disorderDict[disease].keys() and len(
                             disorderDict[disease]['rare phenotypes']) > 0:
-                        row.append(', '.join('('+str(x)+')' for x in disorderDict[disease]['rare phenotypes']))
+                        row.append(', '.join('<a href="https://hpo.jax.org/app/browse/term/'+x[1]+'" target="_blank">'+x[0]+'</a>' for x in disorderDict[disease]['rare phenotypes']))
                     else:
                         row.append('')
 
