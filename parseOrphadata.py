@@ -510,9 +510,10 @@ def naturalHistory(disorderDict):
     return disorderDict
 
 
-def createBed(disorderDict, timestamp):
+def createBed(disorderDict, timestamp, assembly):
     """
-    Creates the final BED file using all disorders/genes and other information.
+    Creates the final BED file using all disorders/genes and other information. Arguments include the time at which the 
+    script is ran and either 'hg19' or 'hg38' as the assembly.
 
     This method begins by iterating through each disorder in disorderDict. For each gene associated with a given
     disorder, the method creates one entry in the BED file that includes the disorder name, chromosomal positions, and
@@ -557,7 +558,6 @@ def createBed(disorderDict, timestamp):
         28. occasPhen : occasional phenotype(s)
         29. rarePhen : rare phenotype(s)
 
-
     :param disorderDict:
     :return:
     """
@@ -565,7 +565,7 @@ def createBed(disorderDict, timestamp):
     # Create new BED file
     # NOTE: encoding for utf-8 is required since several disorders contain special characters that are not included in
     # ascii encoding.
-    f = open('orphadata.'+timestamp+'.bed', "w", encoding='utf-8')
+    f = open('orphadata.'+assembly+timestamp+'.bed', "w", encoding='utf-8')
 
     # Iterate through disorders
     for disease in disorderDict.keys():
@@ -725,30 +725,32 @@ def main():
     # Create Ensembl dictionaries for hg19 and hg38
     hg19ensemblDict, hg38ensemblDict = getEnsGeneInfo()
 
-    if len(hg19ensemblDict.keys()) != len(hg38ensemblDict.keys()):
-        print('success')
-
-    '''
     # Create dictonary to store disorders
-    disorderDict = dict()
+    hg19disorderDict = dict()
+    hg38disorderDict = dict()
 
     # 1. Parse Rare Diseases
-    parseRareDiseases(disorderDict, ensemblDict)
+    parseRareDiseases(hg19disorderDict, hg19ensemblDict)
+    parseRareDiseases(hg38disorderDict, hg38ensemblDict)
 
     # 2. Parse Phenotypes of Rare Diseases
-    parsePhenotypesRareDiseases(disorderDict)
+    parsePhenotypesRareDiseases(hg19disorderDict, hg19ensemblDict)
+    parsePhenotypesRareDiseases(hg38disorderDict, hg38ensemblDict)
 
     # 3. Parse Epidemology Prevalences
-    parseRareDiseaseEpi(disorderDict)
+    parseRareDiseaseEpi(hg19disorderDict)
+    parseRareDiseaseEpi(hg38disorderDict)
 
     # 4. Natural History (ages)
-    naturalHistory(disorderDict)
+    naturalHistory(hg19disorderDict)
+    naturalHistory(hg38disorderDict)
 
-    # 5. Create BED file
-    createBed(disorderDict, timestamp)
+    # 5. Create BED files
+    createBed(hg19disorderDict, timestamp, assembly='hg19')
+    createBed(hg38disorderDict, timestamp, assembly='hg38')
 
     print("Time elapsed: ", time.time() - startTime)
-    '''
+    
 
 if __name__ == "__main__":
     main()
