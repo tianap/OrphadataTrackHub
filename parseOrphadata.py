@@ -42,7 +42,7 @@ class Gene():
 
 def getEnsGeneInfo():
     """
-    Retrieves all transcript information a(faccording to Ensembl gene_id (hg19) to be stored in a dictionary, ensemblInfo.
+    Retrieves all transcript information according to Ensembl gene_id (hg19 and hg38) to be stored in a dictionary, ensemblInfo.
     Iterates through each transcript line for each gene and creates a Gene object using the transcript with the greatest
     chromosomal length. The created Gene object stores the gene ID, chromosome, chromosomal positions, and strand.
     This object is then stored as a value in the ensemblInfo dictionary, with the gene ID as the dictionary key.
@@ -58,32 +58,56 @@ def getEnsGeneInfo():
     # Downloaded from here: http://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/genes/
     # NOTE: we need to download ensembl info
     hg19ensFile = open("../hg19.ensGene.gtf", "r", encoding='utf-8')
+    hg38ensFile = open("../hg38.ensGene.gtf", "r", encoding='utf-8')
 
     # Capture all ensembl transcript information into a dictionary ensemblInfo
-    ensemblInfo = dict()
+    hg19ensemblInfo = dict()
+    hg38ensemblInfo = dict()
 
-    #sys.stdout.write('Storing hg19 Ensembl transcript information...')
+    # hg19 chromosomal coordinates
     for line in hg19ensFile:
         geneInfo = [x.replace('"', "").replace(';', "") for x in line.strip().split()]  # reformat, convert to list
         geneID = geneInfo[9]  # grab geneID
 
         if geneInfo[2] == 'transcript':
-            if geneID not in ensemblInfo.keys():  # check new gene
+            if geneID not in hg19ensemblInfo.keys():  # check new gene
                 gene = Gene(geneInfo)  
-                ensemblInfo[geneID] = gene  # store the Gene object
+                hg19ensemblInfo[geneID] = gene  # store the Gene object
             else:  
                 # Grab the stored coordinates
-                oldStart = int(ensemblInfo[geneID].start)
-                oldEnd = int(ensemblInfo[geneID].end) 
+                oldStart = int(hg19ensemblInfo[geneID].start)
+                oldEnd = int(hg19ensemblInfo[geneID].end) 
 
                 # compare the coordinates
                 if abs(int(geneInfo[4]) - int(geneInfo[3])) > abs(oldEnd - oldStart):
-                    ensemblInfo[geneID].start = geneInfo[3]
-                    ensemblInfo[geneID].end = geneInfo[4]
+                    hg19ensemblInfo[geneID].start = geneInfo[3]
+                    hg19ensemblInfo[geneID].end = geneInfo[4]
+    
+    # hg38 chromosomal coorddinates
+    for line in hg38ensFile:
+        geneInfo = [x.replace('"', "").replace(';', "") for x in line.strip().split()]  # reformat, convert to list
+        geneID = geneInfo[9]  # grab geneID
 
-    hg19ensFile.close()  # close the file
-    #sys.stdout.write('Finished.')
-    return ensemblInfo
+        if geneInfo[2] == 'transcript':
+            if geneID not in hg38ensemblInfo.keys():  # check new gene
+                gene = Gene(geneInfo)  
+                hg38ensemblInfo[geneID] = gene  # store the Gene object
+            else:  
+                # Grab the stored coordinates
+                oldStart = int(hg38ensemblInfo[geneID].start)
+                oldEnd = int(hg38ensemblInfo[geneID].end) 
+
+                # compare the coordinates
+                if abs(int(geneInfo[4]) - int(geneInfo[3])) > abs(oldEnd - oldStart):
+                    hg38ensemblInfo[geneID].start = geneInfo[3]
+                    hg38ensemblInfo[geneID].end = geneInfo[4]
+    
+    # Close the files
+    hg19ensFile.close()
+    hg38ensFile.close()
+
+    
+    return hg19ensemblInfo, hg38ensemblInfo
 
 
 def parseRareDiseases(disorderDict, ensemblDict):
@@ -698,9 +722,13 @@ def main():
     
     startTime = time.time()
 
-    # Create Ensembl dictionary
-    ensemblDict = getEnsGeneInfo()
+    # Create Ensembl dictionaries for hg19 and hg38
+    hg19ensemblDict, hg38ensemblDict = getEnsGeneInfo()
 
+    if len(hg19ensemblDict.keys()) != len(hg38ensemblDict.keys()):
+        print('success')
+
+    '''
     # Create dictonary to store disorders
     disorderDict = dict()
 
@@ -720,7 +748,7 @@ def main():
     createBed(disorderDict, timestamp)
 
     print("Time elapsed: ", time.time() - startTime)
-
+    '''
 
 if __name__ == "__main__":
     main()
