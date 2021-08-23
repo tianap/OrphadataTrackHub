@@ -22,7 +22,7 @@ wget http://www.orphadata.org/data/xml/en_product4.xml
 wget http://www.orphadata.org/data/xml/en_product9_prev.xml
 wget http://www.orphadata.org/data/xml/en_product9_ages.xml
 
-# run parseOrphadata.py with date as argument
+# Run parseOrphadata.py with date as argument
 # NOTE: This script generates two bed files, one for hg19 and one for hg38:
 
 # orphadata.hg19.<timestamp>.bed
@@ -30,5 +30,15 @@ wget http://www.orphadata.org/data/xml/en_product9_ages.xml
 
 python3 "$parentPath/parseOrphadata.py" -t $date
 
+# Sort both files
+sort -k1,1 -k2,2n "orphadata.hg19.$date.bed" > "sortedOrphadata.hg19.bed"
+sort -k1,1 -k2,2n "orphadata.hg38.$date.bed" > "sortedOrphadata.hg38.bed"
 
+# Make bigBed files
+bedToBigBed -tab -as="$parentPath/orphadata.as" -type=bed9+ sortedOrphadata.hg19.bed "$parentPath/hg19.chrom.sizes" "orphadata.hg19.$date.bb"
+bedToBigBed -tab -as="$parentPath/orphadata.as" -type=bed9+ sortedOrphadata.hg38.bed "$parentPath/hg38.chrom.sizes" "orphadata.hg38.$date.bb"
+
+# Copy bigBed files to ./hg19/ and ./hg38/ direcgtories
+cp "orphadata.hg19.$date.bb" "$parentPath/hg19"
+cp "orphadata.hg38.$date.bb" "$parentPath/hg38"
 

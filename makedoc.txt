@@ -1,6 +1,6 @@
 This track hub includes aggregated publicly available data from Orphadata - an online resource for disorders and associated genes (as well as phenotypes and epidemiological data) from Orphanet. 
 
-The bigBed file is created using the shell script createBigBed.sh which can be found in /cluster/home/tmpereir/public_html/trackHubs/orphadata (change to permanent location). The script downloads all relevant .xml files from Orphadata, calls a Python python script, parseOrphadata.py, that scrapes the files and captures all information necessary for the track (more information on the Orphadata files can be found in the docstrings for parseOrphadata.py).
+The bigBed file is created using the shell script updateOrphanet.sh which can be found in /cluster/home/tmpereir/public_html/trackHubs/orphadata (change to permanent location). The script downloads all relevant .xml files from Orphadata, calls a Python python script, parseOrphadata.py, that scrapes the files and captures all information necessary for the track (more information on the Orphadata files can be found in the docstrings for parseOrphadata.py).
 
 FILE DOWNLOAD
 
@@ -64,21 +64,23 @@ Each item in the BED file is a disorder that is associated with a gene, whose ch
 
 CONVERTING BED TO BIGBED
 
-The following commands were used to convert the BED file to bigBed format (these commands can be found in createBigBed.sh).
+The following commands were used to convert the BED file to bigBed format (these commands can be found in updateOrphanet.sh).
+The variable $date includes the timestamp at which the script is called, and $parentPath includes the parent directory for the Orphadata track.
+NOTE: the hg38 bigBed file is created by the same commands but replacing 'hg19' to 'hg38'
 
 # sort the BED file
-sort -k1,1 -k2,2n "$fileName.bed" > sortedOrphadata.bed
+> sort -k1,1 -k2,2n "$orphadata.hg19.date.bed" > sortedOrphadata.hg19.bed
 
 # Get hg19 chromsizes
 > fetchChromSizes hg19 > hg19.chrom.sizes
 
 # bigBed file name
-bedToBigBed -tab -as="$parentPath/orphadata.as" -type=bed9+ sortedOrphadata.bed "$parentPath/hg19.chrom.sizes" "$fileName.bb"
+> bedToBigBed -tab -as="$parentPath/orphadata.as" -type=bed9+ sortedOrphadata.hg19.bed "$parentPath/hg19.chrom.sizes" "orphadata.hg19.$date.bb"
 
-NOTE: -tab needs to be used, otherwise errors will occur.
+NOTE: -tab needs to be used, otherwise errors relating to fields will occur
 
-The variables $fileName includes the timestamp at which the script is called, and $parentPath includes the parent directory for the Orphadata track.
+The final hg19 and hg38 bigBed files are then copied over to the hg19 and hg38 directories, respectively. 
 
-The final bigBed file is then copied over to the hg19 directory. 
+UPDATING TRACKDB FILE
 
-NOTE: the trackDb.txt file must then be updated with the new bigBed file name.
+The trackDb.txt file must then be manually updated with the new bigBed file names.
