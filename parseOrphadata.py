@@ -565,7 +565,7 @@ def createBed(disorderDict, timestamp, assembly):
     # Create new BED file
     # NOTE: encoding for utf-8 is required since several disorders contain special characters that are not included in
     # ascii encoding.
-    f = open('orphadata.'+assembly+timestamp+'.bed', "w", encoding='utf-8')
+    f = open('orphadata.'+assembly+'.'+timestamp+'.bed', "w", encoding='utf-8')
 
     # Iterate through disorders
     for disease in disorderDict.keys():
@@ -734,8 +734,8 @@ def main():
     parseRareDiseases(hg38disorderDict, hg38ensemblDict)
 
     # 2. Parse Phenotypes of Rare Diseases
-    parsePhenotypesRareDiseases(hg19disorderDict, hg19ensemblDict)
-    parsePhenotypesRareDiseases(hg38disorderDict, hg38ensemblDict)
+    parsePhenotypesRareDiseases(hg19disorderDict)
+    parsePhenotypesRareDiseases(hg38disorderDict)
 
     # 3. Parse Epidemology Prevalences
     parseRareDiseaseEpi(hg19disorderDict)
